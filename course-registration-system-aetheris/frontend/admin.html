@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Dashboard — Registrar's Ledger</title>
+<link rel="stylesheet" href="css/styles.css" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+</head>
+<body>
+<script src="js/nebula-bg.js"></script>
+
+<!-- Sidebar -->
+<nav class="sidebar glass">
+  <div class="sidebar-brand">
+    <span class="brand-emoji">📚</span>
+    <span class="brand-name">Registrar</span>
+  </div>
+
+  <div class="sidebar-nav">
+    <a href="#" class="nav-item active">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>
+      <span>Courses</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <span>Students</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg></span>
+      <span>Analytics</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-profile">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <div class="user-info">
+        <span class="user-name" id="whoami">Admin</span>
+        <span class="user-role">Administrator</span>
+      </div>
+      <button class="logout-btn" onclick="Auth.logout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17 21 12 16 7"/><path d="M21 12H9"/></svg></button>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main">
+  <!-- Top Bar -->
+  <header class="topbar glass">
+    <div class="topbar-left">
+      <h1>Course Catalog</h1>
+      <p>Manage all courses in the system</p>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-outline" onclick="openPathsAdminModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:-2px;"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg>Career Paths
+      </button>
+      <button class="btn btn-primary" onclick="openCreateModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:-2px;"><path d="M12 5v14M5 12h14"/></svg> New Course
+      </button>
+      <button class="btn btn-exit" onclick="Auth.logout()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:-2px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17 21 12 16 7"/><path d="M21 12H9"/></svg>Sign Out
+      </button>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card glass">
+      <div class="stat-icon">📚</div>
+      <div>
+        <span class="stat-label">Total Courses</span>
+        <span class="stat-value" id="totalCourses">0</span>
+      </div>
+    </div>
+    <div class="stat-card glass">
+      <div class="stat-icon">✅</div>
+      <div>
+        <span class="stat-label">Active</span>
+        <span class="stat-value" id="activeCourses">0</span>
+      </div>
+    </div>
+    <div class="stat-card glass">
+      <div class="stat-icon">👨‍🏫</div>
+      <div>
+        <span class="stat-label">Instructors</span>
+        <span class="stat-value" id="instructorCount">0</span>
+      </div>
+    </div>
+    <div class="stat-card glass">
+      <div class="stat-icon">🎓</div>
+      <div>
+        <span class="stat-label">Enrollments</span>
+        <span class="stat-value" id="enrollmentCount">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="listError" class="error-banner hidden"></div>
+
+  <!-- Table -->
+  <div class="table-wrapper glass">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Course</th>
+          <th>Instructor</th>
+          <th>Schedule</th>
+          <th>Seats</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="courseBody">
+        <tr>
+          <td colspan="7" class="loading-cell">
+            <div class="spinner"></div>
+            Loading courses...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- ============================================================
+     COURSE MODAL - COMPLETE WORKING VERSION
+     ============================================================ -->
+<div id="courseModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="modalTitle">Create Course</h2>
+      <button class="modal-close" onclick="closeCourseModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    
+    <div id="modalError" class="error-banner hidden"></div>
+    
+    <form id="courseForm" onsubmit="submitCourseForm(event)">
+      <input type="hidden" id="courseId" />
+      
+      <div class="form-grid">
+        <!-- Course Code -->
+        <div class="form-group">
+          <label>Course Code</label>
+          <input id="fCode" required placeholder="e.g. CS101" />
+        </div>
+        
+        <!-- Credits -->
+        <div class="form-group">
+          <label>Credits</label>
+          <input id="fCredits" type="number" min="1" required value="3" />
+        </div>
+        
+        <!-- Title -->
+        <div class="form-group full-width">
+          <label>Title</label>
+          <input id="fTitle" required placeholder="Introduction to Programming" />
+        </div>
+        
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label>Description</label>
+          <textarea id="fDescription" rows="2" placeholder="Course description..."></textarea>
+        </div>
+        
+        <!-- Instructor -->
+        <div class="form-group">
+          <label>Instructor</label>
+          <input id="fInstructor" required placeholder="Dr. Smith" />
+        </div>
+        
+        <!-- Semester -->
+        <div class="form-group">
+          <label>Semester</label>
+          <input id="fSemester" required placeholder="Fall 2026" />
+        </div>
+        
+        <!-- Day -->
+        <div class="form-group">
+          <label>Day</label>
+          <select id="fDay" required>
+            <option value="MONDAY">Monday</option>
+            <option value="TUESDAY">Tuesday</option>
+            <option value="WEDNESDAY">Wednesday</option>
+            <option value="THURSDAY">Thursday</option>
+            <option value="FRIDAY">Friday</option>
+            <option value="SATURDAY">Saturday</option>
+            <option value="SUNDAY">Sunday</option>
+          </select>
+        </div>
+        
+        <!-- Time -->
+        <div class="form-group">
+          <label>Time</label>
+          <div class="time-group">
+            <input id="fStart" type="time" required />
+            <span style="color: var(--text-secondary);">to</span>
+            <input id="fEnd" type="time" required />
+          </div>
+        </div>
+        
+        <!-- Capacity -->
+        <div class="form-group">
+          <label>Capacity</label>
+          <input id="fCapacity" type="number" min="1" required placeholder="30" />
+        </div>
+      </div>
+      
+      <!-- Modal Actions -->
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeCourseModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="modalSubmitBtn">Save Course</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     CONTENT MANAGEMENT MODAL — add/edit/remove lessons for a course
+     ============================================================ -->
+<div id="contentModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="contentModalTitle">Manage Content</h2>
+      <button class="modal-close" onclick="closeContentModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <div id="contentError" class="error-banner hidden"></div>
+
+    <!-- Existing lessons for this course -->
+    <div id="contentListWrap" style="margin-bottom: 18px;">
+      <ul id="contentList" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;"></ul>
+    </div>
+
+    <!-- Add / edit a lesson -->
+    <form id="contentForm" onsubmit="submitContentForm(event)">
+      <input type="hidden" id="cContentId" />
+      <input type="hidden" id="cCourseId" />
+
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Lesson Title</label>
+          <input id="cTitle" required placeholder="e.g. Week 1 — Getting Started" />
+        </div>
+
+        <div class="form-group">
+          <label>Type</label>
+          <select id="cType" onchange="toggleContentTypeFields()">
+            <option value="TEXT">Text lesson</option>
+            <option value="LINK">External link (video, article, etc.)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Order</label>
+          <input id="cOrder" type="number" min="0" value="0" />
+        </div>
+
+        <div class="form-group full-width" id="cBodyWrap">
+          <label>Lesson content</label>
+          <textarea id="cBody" rows="4" placeholder="Write the lesson content here..."></textarea>
+        </div>
+
+        <div class="form-group full-width hidden" id="cUrlWrap">
+          <label>URL</label>
+          <input id="cUrl" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="resetContentForm()">Clear</button>
+        <button type="submit" class="btn btn-primary" id="contentSubmitBtn">Add Lesson</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     QUIZ MANAGEMENT MODAL — quizzes list view + question authoring view
+     (one modal, two swappable "views" inside it)
+     ============================================================ -->
+<div id="quizModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="quizModalTitle">Quizzes</h2>
+      <button class="modal-close" onclick="closeQuizModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <div id="quizError" class="error-banner hidden"></div>
+
+    <!-- VIEW 1: list of quizzes for this course -->
+    <div id="quizListView">
+      <ul id="quizList" style="list-style:none; padding:0; margin:0 0 18px; display:flex; flex-direction:column; gap:8px;"></ul>
+
+      <form id="newQuizForm" onsubmit="submitNewQuiz(event)">
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label>New Quiz Title</label>
+            <input id="qTitle" required placeholder="e.g. Week 1 Check-in" />
+          </div>
+          <div class="form-group full-width">
+            <label>Description (optional)</label>
+            <input id="qDescription" placeholder="Short description" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">+ Create Quiz</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- VIEW 2: questions for a selected quiz -->
+    <div id="quizDetailView" class="hidden">
+      <button type="button" class="btn btn-outline btn-small" style="margin-bottom:14px;" onclick="backToQuizList()">← Back to quizzes</button>
+
+      <ul id="questionList" style="list-style:none; padding:0; margin:0 0 18px; display:flex; flex-direction:column; gap:8px;"></ul>
+
+      <form id="newQuestionForm" onsubmit="submitNewQuestion(event)">
+        <div class="form-group full-width">
+          <label>Question</label>
+          <input id="qnText" required placeholder="e.g. What does JDBC stand for?" />
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px;">
+          Fill in at least 2 options, and mark the one correct answer.
+        </p>
+        <div id="optionRows" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;"></div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">+ Add Question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Analytics modal — read-only, no CSS classes needed beyond what already exists -->
+<div id="analyticsModal" class="modal-overlay hidden">
+  <div class="modal glass" style="max-width: 640px;">
+    <div class="modal-header">
+      <h2 id="analyticsModalTitle">Analytics</h2>
+      <button class="modal-close" onclick="closeAnalyticsModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div id="analyticsError" class="error-banner hidden"></div>
+    <div id="analyticsBody"></div>
+  </div>
+</div>
+
+<!-- Career Paths admin modal (list view + detail view, same swappable pattern as Quizzes) -->
+<div id="pathsAdminModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="pathsAdminTitle">Career Paths</h2>
+      <button class="modal-close" onclick="closePathsAdminModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <div id="pathsAdminError" class="error-banner hidden"></div>
+
+    <!-- VIEW 1: list of paths -->
+    <div id="pathsAdminListView">
+      <div id="pathsAdminList" style="margin-bottom:18px;"></div>
+
+      <form id="newPathForm" onsubmit="submitNewPath(event)">
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label>New Path Name</label>
+            <input id="pName" required placeholder="e.g. Backend Developer" />
+          </div>
+          <div class="form-group full-width">
+            <label>Description (optional)</label>
+            <input id="pDescription" placeholder="Short description" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">+ Create Path</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- VIEW 2: courses in a selected path -->
+    <div id="pathDetailAdminView" class="hidden">
+      <button type="button" class="btn btn-outline btn-small" style="margin-bottom:14px;" onclick="backToPathsAdminList()">← Back to paths</button>
+      <div id="pathDetailAdminList" style="margin-bottom:16px;"></div>
+
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Add a course to this path</label>
+          <select id="pAddCourseSelect"></select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" onclick="addCourseToPath()">+ Add Course</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Side Quest management modal — same list-form pattern as Content -->
+<div id="questModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="questModalTitle">Side Quests</h2>
+      <button class="modal-close" onclick="closeQuestModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <div id="questError" class="error-banner hidden"></div>
+
+    <ul id="questList" style="list-style:none; padding:0; margin:0 0 18px; display:flex; flex-direction:column; gap:8px;"></ul>
+
+    <form id="newQuestForm" onsubmit="submitNewQuest(event)">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Quest Title</label>
+          <input id="qtTitle" required placeholder="e.g. Introduce yourself in the discussion" />
+        </div>
+        <div class="form-group full-width">
+          <label>Description (optional)</label>
+          <input id="qtDescription" placeholder="What should the student do?" />
+        </div>
+        <div class="form-group">
+          <label>Points</label>
+          <input id="qtPoints" type="number" min="1" value="10" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:5px;"><path d="M12 5v14M5 12h14"/></svg>Add Quest</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Dashboard — Registrar's Ledger</title>
+<link rel="stylesheet" href="css/styles.css" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+</head>
+<body>
+<script src="js/nebula-bg.js"></script>
+
+<!-- Sidebar -->
+<nav class="sidebar glass">
+  <div class="sidebar-brand">
+    <span class="brand-emoji">🎓</span>
+    <span class="brand-name">Student</span>
+  </div>
+
+  <div class="sidebar-nav">
+    <a href="#" class="nav-item active" data-tab="catalog" onclick="switchTab('catalog')">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>
+      <span>Catalog</span>
+    </a>
+    <a href="#" class="nav-item" data-tab="mine" onclick="switchTab('mine')">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>
+      <span>My Enrollments</span>
+    </a>
+    <a href="#" class="nav-item" data-tab="schedule" onclick="switchTab('schedule')">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+      <span>Schedule</span>
+    </a>
+    <a href="#" class="nav-item" data-tab="paths" onclick="switchTab('paths')">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></span>
+      <span>Career Paths</span>
+    </a>
+    <a href="#" class="nav-item" data-tab="badges" onclick="switchTab('badges')">
+      <span class="nav-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></span>
+      <span>Badges</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-profile">
+      <div class="user-avatar" id="userAvatar">S</div>
+      <div class="user-info">
+        <span class="user-name" id="whoami">Student</span>
+        <span class="user-role">Student</span>
+      </div>
+      <button class="logout-btn" onclick="Auth.logout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17 21 12 16 7"/><path d="M21 12H9"/></svg></button>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main">
+  <!-- Top Bar -->
+  <header class="topbar glass">
+    <div class="topbar-left">
+      <h1 id="pageTitle">Course Catalog</h1>
+      <p id="pageSubtitle">Browse courses and request enrollment</p>
+    </div>
+    <div class="topbar-right">
+      <span class="welcome-badge">👋 Welcome back!</span>
+      <button class="btn btn-exit" onclick="Auth.logout()">
+        <span style="margin-right:6px; display:inline-flex; vertical-align:-2px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17 21 12 16 7"/><path d="M21 12H9"/></svg></span>Sign Out
+      </button>
+    </div>
+  </header>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    
+    <!-- CATALOG TAB -->
+    <div id="panel-catalog" class="tab-panel active">
+      <!-- Search -->
+      <div class="search-section glass">
+        <div class="search-grid">
+          <div class="search-group">
+            <label>🔍 Search</label>
+            <input id="searchKeyword" placeholder="Course code, title, or instructor..." oninput="debouncedSearch()" />
+          </div>
+          <div class="search-group">
+            <label>📆 Semester</label>
+            <input id="searchSemester" placeholder="e.g. Fall 2026" oninput="debouncedSearch()" />
+          </div>
+          <div class="search-group" style="display: flex; align-items: flex-end;">
+            <button class="btn btn-primary" onclick="loadCatalog()" style="width: 100%;">
+              🔄 Search
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="catalogError" class="error-banner hidden"></div>
+
+      <!-- Course Table -->
+      <div class="table-wrapper glass">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Instructor</th>
+              <th>Schedule</th>
+              <th>Credits</th>
+              <th>Seats</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="catalogBody">
+            <tr>
+              <td colspan="7" class="loading-cell">
+                <div class="spinner"></div>
+                Loading courses...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MY ENROLLMENTS TAB -->
+    <div id="panel-mine" class="tab-panel">
+      <div id="mineError" class="error-banner hidden"></div>
+      <div class="table-wrapper glass">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Requested</th>
+              <th>Status</th>
+              <th>Note</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="mineBody">
+            <tr>
+              <td colspan="6" class="loading-cell">
+                <div class="spinner"></div>
+                Loading enrollments...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SCHEDULE TAB -->
+    <div id="panel-schedule" class="tab-panel">
+      <div id="scheduleError" class="error-banner hidden"></div>
+      <div class="table-wrapper glass">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Time</th>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Instructor</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleBody">
+            <tr>
+              <td colspan="5" class="loading-cell">
+                <div class="spinner"></div>
+                Loading schedule...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CAREER PATHS TAB -->
+    <div id="panel-paths" class="tab-panel">
+      <div id="pathsError" class="error-banner hidden"></div>
+      <!-- List view -->
+      <div id="pathsListView">
+        <div id="pathsList"></div>
+      </div>
+      <!-- Detail view (courses in a selected path, with status) -->
+      <div id="pathDetailView" class="hidden">
+        <button type="button" class="btn btn-outline btn-small" style="margin-bottom:14px;" onclick="backToPathsList()">← Back to career paths</button>
+        <div id="pathDetailBody"></div>
+      </div>
+    </div>
+
+    <!-- BADGES TAB -->
+    <div id="panel-badges" class="tab-panel">
+      <div id="badgesError" class="error-banner hidden"></div>
+      <div id="badgesList"></div>
+    </div>
+  </div>
+</main>
+
+<!-- Course Content Viewer (read-only, for enrolled students) -->
+<div id="contentViewerModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="contentViewerTitle">Lessons</h2>
+      <button class="modal-close" onclick="closeContentViewer()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div id="contentViewerBody"></div>
+  </div>
+</div>
+
+<!-- Quiz taking flow (list -> take -> results, one modal, three swappable views) -->
+<div id="quizStudentModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="quizStudentTitle">Quizzes</h2>
+      <button class="modal-close" onclick="closeQuizModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <div id="quizStudentError" class="error-banner hidden"></div>
+
+    <!-- VIEW 1: list of quizzes for the course -->
+    <div id="quizStudentListView">
+      <div id="quizStudentList"></div>
+    </div>
+
+    <!-- VIEW 2: taking a quiz -->
+    <div id="quizTakeView" class="hidden">
+      <button type="button" class="btn btn-outline btn-small" style="margin-bottom:14px;" onclick="backToQuizStudentList()">← Back to quizzes</button>
+      <div id="quizTakeQuestions"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="submitQuizBtn" onclick="submitQuizAttempt()">Submit Answers</button>
+      </div>
+    </div>
+
+    <!-- VIEW 3: results -->
+    <div id="quizResultView" class="hidden">
+      <button type="button" class="btn btn-outline btn-small" style="margin-bottom:14px;" onclick="backToQuizStudentList()">← Back to quizzes</button>
+      <div id="quizResultSummary" style="margin-bottom:14px;"></div>
+      <div id="quizResultQuestions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Certificate: shows progress + claim button, or the issued certificate itself -->
+<div id="certModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="certModalTitle">Certificate</h2>
+      <button class="modal-close" onclick="closeCertificateModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div id="certModalBody"></div>
+  </div>
+</div>
+
+<!-- Side Quests: list with points and self-completion -->
+<div id="questListModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2 id="questListTitle">Side Quests</h2>
+      <button class="modal-close" onclick="closeQuestListModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div id="questListError" class="error-banner hidden"></div>
+    <div id="questListBody"></div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/student.js"></script>
+</body>
+</html>
