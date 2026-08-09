@@ -151,23 +151,97 @@ change `jwt.secret` to something real (`openssl rand -base64 32`).
 
 **3. Run the backend**
 
+> ⚠️ **Important:** you must run this **from inside the `backend/` folder** —
+> that's where the Maven file (`pom.xml`) lives. Running `mvn spring-boot:run`
+> from the project root (or any other folder) will fail with
+> `No plugin found for prefix 'spring-boot'`.
+
+Open a terminal at the project root, then:
+
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-It starts on `http://localhost:8080`.
+On **Windows (PowerShell or CMD)**, the same commands are:
+
+```powershell
+cd backend
+mvn spring-boot:run
+```
+
+The backend starts on `http://localhost:8080`. You should see Spring Boot's
+startup banner and a line like `Tomcat started on port 8080`. If you instead
+get the `No plugin found for prefix 'spring-boot'` error, double-check that
+your current directory contains `pom.xml` (run `dir` on Windows / `ls` on
+macOS-Linux to confirm).
 
 **4. Serve the frontend** (don't just double-click `index.html` — serve it,
-so `fetch()` behaves consistently):
+so `fetch()` behaves consistently). Open a **second** terminal at the project
+root and run:
 
 ```bash
 cd frontend
 python3 -m http.server 5500
 ```
 
+On **Windows**, use `python` instead of `python3`:
+
+```powershell
+cd frontend
+python -m http.server 5500
+```
+
 Then open `http://localhost:5500`. If your backend isn't on
 `localhost:8080`, update `API_BASE` at the top of `frontend/js/api.js`.
+
+> 💡 **Quick recap — two terminals, two folders:**
+> - Terminal 1 → `cd backend` → `mvn spring-boot:run` (runs on `:8080`)
+> - Terminal 2 → `cd frontend` → `python -m http.server 5500` (serves on `:5500`)
+
+## Troubleshooting: "Internal server error" (500)
+
+If the app loads but shows **"Internal server error"** on the login page (or
+any action), the backend is throwing an unhandled 500. **By far the most
+common cause is the database connection.** Here's how to fix it, in order:
+
+1. **Check your MySQL password.** Open
+   `backend/src/main/resources/application.properties` and confirm
+   `spring.datasource.username` and `spring.datasource.password` match your
+   local MySQL. The default placeholder is `YOUR_MYSQL_PASSWORD` — if you
+   left it as-is (or set it to `yourpassword`), the backend cannot log in to
+   MySQL and every DB request returns 500. Set it to your real password:
+
+   ```properties
+   spring.datasource.username=root
+   spring.datasource.password=YOUR_REAL_MYSQL_PASSWORD
+   ```
+
+   (After editing, restart the backend: stop it with `Ctrl+C`, then run
+   `mvn spring-boot:run` again.)
+
+2. **Confirm the database was created.** Run every `.sql` file from the
+   `database/` folder in order (schema → seed → migrations) using the MySQL
+   CLI. The database must be named `course_registration` (that's what
+   `application.properties` points to). If it's missing, tables are missing,
+   and queries will throw 500.
+
+3. **Confirm MySQL is actually running.** The backend connects to
+   `localhost:3306`. If MySQL isn't started, the connection fails and you get
+   a 500. Make sure the MySQL service is running.
+
+4. **Check the exact error in the logs.** The backend console shows the real
+   stack trace (e.g. `Access denied for user 'root'@'localhost'` or
+   `Unknown database 'course_registration'`). Read the last lines of the
+   `mvn spring-boot:run` output to pin down the cause.
+
+> 🛠️ **Tip:** If you don't want to hard-code your password in the file, you
+> can set a `DB_PASSWORD` environment variable instead (the config already
+> supports it via `${DB_PASSWORD:...}`):
+> ```powershell
+> $env:DB_PASSWORD="YOUR_REAL_MYSQL_PASSWORD"
+> mvn spring-boot:run
+> ```
 
 ## Logging in
 
