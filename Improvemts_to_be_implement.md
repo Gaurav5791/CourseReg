@@ -1,17 +1,17 @@
 FEATURE 01: COURSE PREREQUISITES
 
 Objective:
-Allow administrators to define prerequisite courses and prevent
-students from requesting courses for which they are not eligible.
+Enable administrators to assign prerequisite courses and stop
+students from requesting courses they are not ready for.
 
 DATABASE CHANGES:
-- New table: course_prerequisites
+- Create table: course_prerequisites
   - id (PK)
   - course_id (FK to courses.id)
   - prerequisite_course_id (FK to courses.id)
   - created_at
-- Enforce foreign-key constraints
-- Prevent self-prerequisites and circular prerequisite chains
+- Enforce foreign key constraints
+- Reject self-prerequisites and cyclical prerequisite relationships
 
 BACKEND:
 - Add model
@@ -20,11 +20,11 @@ BACKEND:
 - Add service logic
 - Add controller endpoints
 - Add validation
-  - course exists
-  - prerequisite exists
-  - no self-prerequisite
-  - no prerequisite cycles
-- Add authorization
+  - verify course exists
+  - verify prerequisite exists
+  - disallow self-prerequisite entries
+  - detect and prevent prerequisite cycles
+- Add authorization checks
 
 API:
 POST   /api/admin/courses/{id}/prerequisites
@@ -32,11 +32,11 @@ GET    /api/admin/courses/{id}/prerequisites
 DELETE /api/admin/courses/{id}/prerequisites/{prerequisiteId}
 
 STUDENT BEHAVIOR:
-When a student requests enrollment:
-1. Check prerequisites.
-2. Check whether each prerequisite is completed.
-3. If incomplete, reject the request.
-4. Return the missing prerequisites.
+When a student submits an enrollment request:
+1. Verify required prerequisites.
+2. Confirm completion of each prerequisite.
+3. If any are incomplete, reject the request.
+4. Return the list of missing prerequisites.
 
 EXAMPLE RESPONSE:
 {
@@ -48,18 +48,18 @@ EXAMPLE RESPONSE:
 }
 
 FRONTEND:
-- Show prerequisites on course details.
-- Show eligibility status.
+- Display prerequisites on course details.
+- Show whether the student is eligible.
 - Disable enrollment when prerequisites are missing.
-- Explain why enrollment is unavailable.
+- Explain why the course cannot be requested.
 
 SECURITY:
-- Only ADMIN can create/remove prerequisites.
-- Student eligibility must be checked server-side.
-- Never rely only on frontend validation.
+- Only ADMIN may add or remove prerequisites.
+- Eligibility checks must happen on the server.
+- Do not depend solely on frontend validation.
 
 TESTING:
-- Student with prerequisites → enrollment allowed.
-- Student without prerequisites → enrollment blocked.
-- Admin → can manage prerequisites.
-- Student → cannot modify prerequisites.
+- Student with required prerequisites can enroll.
+- Student without prerequisites is blocked.
+- Admin can manage prerequisites.
+- Student cannot modify prerequisite rules.
