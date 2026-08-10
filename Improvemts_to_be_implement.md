@@ -6,9 +6,12 @@ students from requesting courses for which they are not eligible.
 
 DATABASE CHANGES:
 - New table: course_prerequisites
-- course_id
-- prerequisite_course_id
-- created_at
+  - id (PK)
+  - course_id (FK to courses.id)
+  - prerequisite_course_id (FK to courses.id)
+  - created_at
+- Enforce foreign-key constraints
+- Prevent self-prerequisites and circular prerequisite chains
 
 BACKEND:
 - Add model
@@ -17,6 +20,10 @@ BACKEND:
 - Add service logic
 - Add controller endpoints
 - Add validation
+  - course exists
+  - prerequisite exists
+  - no self-prerequisite
+  - no prerequisite cycles
 - Add authorization
 
 API:
@@ -25,7 +32,7 @@ GET    /api/admin/courses/{id}/prerequisites
 DELETE /api/admin/courses/{id}/prerequisites/{prerequisiteId}
 
 STUDENT BEHAVIOR:
-When requesting enrollment:
+When a student requests enrollment:
 1. Check prerequisites.
 2. Check whether each prerequisite is completed.
 3. If incomplete, reject the request.
