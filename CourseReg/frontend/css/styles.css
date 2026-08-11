@@ -696,3 +696,162 @@ body:has(.sidebar) { display: flex; min-height: 100vh; }
   .form-grid { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
 }
+/* =====================================================================
+   CERTIFICATE — deliberately a different visual language from the rest
+   of the dark app. Real certificates are light, formal, and printable —
+   nobody wants to burn ink printing a dark background. Navy ink on cream
+   paper with a gold/brass accent, echoing an actual diploma.
+   ===================================================================== */
+
+.certificate-shell {
+  padding: 6px;
+  background: linear-gradient(135deg, #d4af6a, #f4e2b8, #d4af6a);
+  border-radius: 14px;
+}
+
+.certificate {
+  position: relative;
+  background: #faf6ec;
+  color: #1a2332;
+  border: 2px solid #b8935f;
+  border-radius: 10px;
+  padding: 44px 48px 36px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow: hidden;
+}
+
+/* inner hairline border, the classic "double rule" certificate frame */
+.certificate::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid #cbb078;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.certificate-seal {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 6px;
+  color: #b8935f;
+}
+
+.certificate-kicker {
+  text-align: center;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8a6a3d;
+}
+
+.certificate-issuer {
+  text-align: center;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: #1a2332;
+  margin-top: 2px;
+}
+
+.certificate-lead {
+  text-align: center;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #52432a;
+  margin-top: 22px;
+}
+
+.certificate-name {
+  text-align: center;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  color: #1a2332;
+  margin: 8px 0;
+  line-height: 1.15;
+}
+
+.certificate-body {
+  text-align: center;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #52432a;
+  margin-top: 4px;
+}
+
+.certificate-course {
+  text-align: center;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: #1a2332;
+  margin: 10px 0 0;
+}
+
+.certificate-divider {
+  width: 80px;
+  height: 2px;
+  margin: 26px auto;
+  background: #b8935f;
+}
+
+.certificate-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.certificate-field { text-align: center; flex: 1; }
+.certificate-field .value {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #1a2332;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #b8935f;
+  margin-bottom: 6px;
+}
+.certificate-field .label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a6a3d;
+}
+
+.certificate-code {
+  text-align: center;
+  margin-top: 26px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.7rem;
+  color: #8a6a3d;
+  letter-spacing: 0.04em;
+}
+
+/* Print / Save-as-PDF: hide everything on the page except the certificate itself */
+@media print {
+  body * { visibility: hidden; }
+  .certificate-printable, .certificate-printable * { visibility: visible; }
+  .certificate-printable {
+    position: fixed;
+    inset: 0;
+    margin: 0;
+    padding: 24px;
+  }
+  #glcanvas, .modal-close, .certificate-print-btn { display: none !important; }
+  .certificate, .certificate-shell {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page { size: landscape; margin: 0.4in; }
+}

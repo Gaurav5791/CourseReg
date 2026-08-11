@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Verify a Certificate — Registrar's Ledger</title>
+<link rel="stylesheet" href="css/styles.css" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+</head>
+<body>
+<script src="js/nebula-bg.js"></script>
+
+<div class="auth-wrapper" style="align-items: flex-start; padding-top: 60px;">
+  <div style="width: 100%; max-width: 720px;">
+
+    <div class="glass" style="padding: 28px 32px; border-radius: 20px; margin-bottom: 20px; text-align: center;">
+      <h1 style="font-family: 'Manrope', sans-serif; font-size: 1.4rem; margin-bottom: 6px;">Verify a Certificate</h1>
+      <p class="status-muted" style="margin-bottom: 20px;">
+        Anyone can confirm a Registrar's Ledger certificate is genuine here — no account needed.
+      </p>
+
+      <form id="verifyForm" onsubmit="handleVerify(event)" style="display:flex; gap:10px; max-width: 460px; margin: 0 auto;">
+        <input id="codeInput" placeholder="Paste the verification code" style="flex:1; padding:11px 14px; border-radius:12px; border:1px solid var(--outline-variant); background:rgba(5,7,13,0.4); color:var(--text);" />
+        <button class="btn btn-primary" type="submit">Verify</button>
+      </form>
+    </div>
+
+    <div id="verifyError" class="error-banner hidden"></div>
+    <div id="verifyResult"></div>
+
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/verify.js"></script>
+</body>
+</html>
