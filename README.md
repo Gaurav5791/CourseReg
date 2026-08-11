@@ -1,4 +1,4 @@
-# CourseReg — Online Course Registration System
+# Registrar's Ledger — Online Course Registration System
 
 A 3-role course registration system that grew into a small LMS: **students**
 browse the catalog, request to enroll/drop, work through course content and
@@ -10,54 +10,6 @@ one who can remove a course.
 
 Java + Spring Boot backend using hand-written JDBC (no JPA/Hibernate), MySQL,
 and a plain HTML/CSS/JS frontend (no framework, no build step).
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Tech Stack](#tech-stack)
-- [Why it's built this way](#why-its-built-this-way)
-- [Project layout](#project-layout)
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-- [Logging in](#logging-in)
-- [Feature tour](#feature-tour)
-- [API summary](#api-summary)
-- [Being upfront about the process](#being-upfront-about-the-process)
-- [Natural next steps](#natural-next-steps-good-future-work-talking-points)
-
-## Overview
-
-| Role      | What they can do                                                                                       |
-|-----------|--------------------------------------------------------------------------------------------------------|
-| **Student** | Browse the catalog, request enroll/drop, view lessons, take quizzes, claim certificates, earn badges, complete side quests, follow career paths |
-| **Admin** | Manage the course catalog, lesson content, quizzes, career paths, and side quests; view analytics      |
-| **Registrar** | Approves/rejects every enroll & drop request; the only role that can remove a course                  |
-
-**Highlights at a glance:**
-
-- 🔐 JWT-based auth with public self-registration (students only)
-- 🎓 Certificates with a public verification endpoint
-- 🏅 Automatic badges computed from existing progress (no separate table)
-- 🧭 Curated career paths with per-course student status
-- ✨ Side quests for lightweight, point-based engagement
-- 🗄️ Seat limits enforced with real DB transactions (`SELECT ... FOR UPDATE`)
-
-## Tech Stack
-
-**Backend**
-- Java 17+, Spring Boot 4.1.0 (Web, Security, JDBC, Validation)
-- Hand-written JDBC (`Connection` / `PreparedStatement` / `ResultSet`) — no JPA/Hibernate
-- HikariCP connection pooling (auto-configured via Spring Boot)
-- JWT auth via jjwt 0.12.6
-- Spring Security with role-based rules (ADMIN / REGISTRAR / STUDENT)
-
-**Database**
-- MySQL 8+ (schema + seed data + 5 ordered migration files)
-
-**Frontend**
-- Plain HTML / CSS / JS — no framework, no build step
-- Vanilla JS talks to the backend over REST
-- Inline SVG icon set (offline-friendly, nothing from a CDN to fail)
 
 ## Why it's built this way
 
@@ -87,34 +39,9 @@ and a plain HTML/CSS/JS frontend (no framework, no build step).
 ## Project layout
 
 ```
-course-registration-system-aetheris/
-├── database/            — schema + one migration file per feature, run in order (see below)
-│   ├── schema.sql
-│   ├── seed_data.sql
-│   └── migration_*.sql  (content, quiz, progress_certificates, career_paths, side_quests)
-├── backend/             — Spring Boot Maven project (raw JDBC throughout)
-│   └── src/main/java/com/courseregistration/
-│       ├── controller/  — REST controllers (Admin, Student, Registrar, Quiz, Content, ...)
-│       ├── service/     — business logic (Enrollment, Progress, Certificate, Badge, ...)
-│       ├── dao/         — hand-written JDBC data access
-│       ├── model/       — domain records (Course, Enrollment, Quiz, User, ...)
-│       ├── dto/         — request/response records
-│       ├── security/    — JWT filter, token util, authenticated principal
-│       ├── config/      — Spring Security config, CORS, password encoder
-│       └── exception/   — API exception + global handler
-└── frontend/            — static HTML/CSS/JS, talks to the backend over REST
-    ├── index.html       — login / self-register
-    ├── student.html     — student dashboard
-    ├── admin.html       — admin dashboard
-    ├── registrar.html   — registrar dashboard
-    ├── css/styles.css
-    └── js/
-        ├── api.js       — shared API helper + inline SVG icon set
-        ├── auth.js      — auth-page logic
-        ├── student.js   — student dashboard logic
-        ├── admin.js     — admin dashboard logic
-        ├── registrar.js — registrar dashboard logic
-        └── nebula-bg.js — animated WebGL login background
+database/    — schema + one migration file per feature, run in order (see below)
+backend/     — Spring Boot Maven project (raw JDBC throughout)
+frontend/    — static HTML/CSS/JS, talks to the backend over REST
 ```
 
 ## Prerequisites
@@ -151,97 +78,23 @@ change `jwt.secret` to something real (`openssl rand -base64 32`).
 
 **3. Run the backend**
 
-> ⚠️ **Important:** you must run this **from inside the `backend/` folder** —
-> that's where the Maven file (`pom.xml`) lives. Running `mvn spring-boot:run`
-> from the project root (or any other folder) will fail with
-> `No plugin found for prefix 'spring-boot'`.
-
-Open a terminal at the project root, then:
-
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-On **Windows (PowerShell or CMD)**, the same commands are:
-
-```powershell
-cd backend
-mvn spring-boot:run
-```
-
-The backend starts on `http://localhost:8080`. You should see Spring Boot's
-startup banner and a line like `Tomcat started on port 8080`. If you instead
-get the `No plugin found for prefix 'spring-boot'` error, double-check that
-your current directory contains `pom.xml` (run `dir` on Windows / `ls` on
-macOS-Linux to confirm).
+It starts on `http://localhost:8080`.
 
 **4. Serve the frontend** (don't just double-click `index.html` — serve it,
-so `fetch()` behaves consistently). Open a **second** terminal at the project
-root and run:
+so `fetch()` behaves consistently):
 
 ```bash
 cd frontend
 python3 -m http.server 5500
 ```
 
-On **Windows**, use `python` instead of `python3`:
-
-```powershell
-cd frontend
-python -m http.server 5500
-```
-
 Then open `http://localhost:5500`. If your backend isn't on
 `localhost:8080`, update `API_BASE` at the top of `frontend/js/api.js`.
-
-> 💡 **Quick recap — two terminals, two folders:**
-> - Terminal 1 → `cd backend` → `mvn spring-boot:run` (runs on `:8080`)
-> - Terminal 2 → `cd frontend` → `python -m http.server 5500` (serves on `:5500`)
-
-## Troubleshooting: "Internal server error" (500)
-
-If the app loads but shows **"Internal server error"** on the login page (or
-any action), the backend is throwing an unhandled 500. **By far the most
-common cause is the database connection.** Here's how to fix it, in order:
-
-1. **Check your MySQL password.** Open
-   `backend/src/main/resources/application.properties` and confirm
-   `spring.datasource.username` and `spring.datasource.password` match your
-   local MySQL. The default placeholder is `YOUR_MYSQL_PASSWORD` — if you
-   left it as-is (or set it to `yourpassword`), the backend cannot log in to
-   MySQL and every DB request returns 500. Set it to your real password:
-
-   ```properties
-   spring.datasource.username=root
-   spring.datasource.password=YOUR_REAL_MYSQL_PASSWORD
-   ```
-
-   (After editing, restart the backend: stop it with `Ctrl+C`, then run
-   `mvn spring-boot:run` again.)
-
-2. **Confirm the database was created.** Run every `.sql` file from the
-   `database/` folder in order (schema → seed → migrations) using the MySQL
-   CLI. The database must be named `course_registration` (that's what
-   `application.properties` points to). If it's missing, tables are missing,
-   and queries will throw 500.
-
-3. **Confirm MySQL is actually running.** The backend connects to
-   `localhost:3306`. If MySQL isn't started, the connection fails and you get
-   a 500. Make sure the MySQL service is running.
-
-4. **Check the exact error in the logs.** The backend console shows the real
-   stack trace (e.g. `Access denied for user 'root'@'localhost'` or
-   `Unknown database 'course_registration'`). Read the last lines of the
-   `mvn spring-boot:run` output to pin down the cause.
-
-> 🛠️ **Tip:** If you don't want to hard-code your password in the file, you
-> can set a `DB_PASSWORD` environment variable instead (the config already
-> supports it via `${DB_PASSWORD:...}`):
-> ```powershell
-> $env:DB_PASSWORD="YOUR_REAL_MYSQL_PASSWORD"
-> mvn spring-boot:run
-> ```
 
 ## Logging in
 
@@ -342,20 +195,6 @@ Completed / In Progress / Not Started.
 | DELETE | `/api/registrar/courses/{id}` | registrar | remove a course |
 
 Auth is a JWT in `Authorization: Bearer <token>`, issued on login/register.
-
-## Security notes
-
-The `jwt.secret` in `backend/src/main/resources/application.properties` is a
-**randomly generated 64-byte key** (well above the 32-byte minimum required
-for HS256). It is suitable for local development. **Before deploying
-anywhere real, regenerate it** with:
-
-```bash
-openssl rand -base64 32
-```
-
-and update the `jwt.secret` value in `application.properties`. Tokens expire
-after 24 hours (`jwt.expiration-ms=86400000`).
 
 ## Being upfront about the process
 
