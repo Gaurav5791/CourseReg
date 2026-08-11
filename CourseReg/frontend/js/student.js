@@ -446,17 +446,60 @@ async function renderCertificateModal() {
 }
 
 function renderCertificateCard(cert) {
+  const dateOnly = formatCertDate(cert.issuedAt);
+  const verifyUrl = window.location.origin + window.location.pathname.replace('student.html', '') + 'verify.html?code=' + encodeURIComponent(cert.certificateCode);
+
   return `
-    <div class="glass" style="padding:28px; border-radius:12px; text-align:center; border: 1px solid var(--accent);">
-      <div style="font-size:2rem; margin-bottom:8px;">🎓</div>
-      <p class="status-muted" style="letter-spacing:0.08em; text-transform:uppercase; font-size:0.75rem;">Certificate of Completion</p>
-      <h2 style="margin:10px 0;">${escapeHtml(cert.studentName)}</h2>
-      <p class="status-muted">has successfully completed</p>
-      <h3 style="margin:8px 0;">${escapeHtml(cert.courseCode)} — ${escapeHtml(cert.courseTitle)}</h3>
-      <p class="status-muted" style="margin-top:14px; font-size:0.8rem;">Issued ${cert.issuedAt}</p>
-      <p class="mono status-muted" style="margin-top:6px; font-size:0.75rem;">Verification code: ${escapeHtml(cert.certificateCode)}</p>
+    <div class="certificate-printable">
+      <div class="certificate-shell">
+        <div class="certificate">
+          <svg class="certificate-seal" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="24" r="20" fill="currentColor" opacity="0.12"/>
+            <circle cx="32" cy="24" r="20" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="32" cy="24" r="14" stroke="currentColor" stroke-width="1"/>
+            <path d="M32 14 L34.5 20.5 L41.5 21 L36 25.5 L38 32.5 L32 28.5 L26 32.5 L28 25.5 L22.5 21 L29.5 20.5 Z" fill="currentColor"/>
+            <path d="M20 40 L24 57 L32 51 L40 57 L44 40" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p class="certificate-kicker">Certificate of Completion</p>
+          <p class="certificate-issuer">Registrar's Ledger</p>
+
+          <p class="certificate-lead">This certifies that</p>
+          <h1 class="certificate-name">${escapeHtml(cert.studentName)}</h1>
+          <p class="certificate-body">has successfully completed all coursework and requirements for</p>
+          <p class="certificate-course">${escapeHtml(cert.courseCode)} — ${escapeHtml(cert.courseTitle)}</p>
+
+          <div class="certificate-divider"></div>
+
+          <div class="certificate-footer">
+            <div class="certificate-field">
+              <div class="value">${escapeHtml(dateOnly)}</div>
+              <div class="label">Date Issued</div>
+            </div>
+            <div class="certificate-field">
+              <div class="value" style="font-family:'EB Garamond',serif; font-style:italic;">Office of the Registrar</div>
+              <div class="label">Authorized By</div>
+            </div>
+          </div>
+
+          <p class="certificate-code">
+            Verification code: ${escapeHtml(cert.certificateCode)} &nbsp;·&nbsp; Verify at ${escapeHtml(verifyUrl)}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="certificate-print-btn" style="text-align:center; margin-top:16px;">
+      <button class="btn btn-outline btn-small" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:5px;"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+        Print / Save as PDF
+      </button>
     </div>
   `;
+}
+
+function formatCertDate(issuedAt) {
+  const parsed = new Date(issuedAt.replace(' ', 'T'));
+  if (isNaN(parsed)) return issuedAt;
+  return parsed.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 async function claimCertificate() {
