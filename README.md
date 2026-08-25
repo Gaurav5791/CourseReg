@@ -1,4 +1,4 @@
-# Registrar's Ledger — Online Course Registration System
+# CourseReg — An Online Course Registration System
 
 A 3-role course registration system that grew into a small LMS: **students**
 browse the catalog, request to enroll/drop, work through course content and
